@@ -3,30 +3,27 @@
 LOG_FILE="/var/log/backup.log"
 exec > "$LOG_FILE" 2>&1
 
-# Базовые настройки Telegram (общие для обоих бэкапов)
-TOKEN="6280078703:AAGCyIs3TaJtc91ojWGWIinIGOgUplBosDY"
-CHAT_ID="5244976287"
+TOKEN="Your_token_bot"
+CHAT_ID="Your_chat_ID"
 
-# ЧАСТЬ 1: БЭКАП БАЗЫ ДАННЫХ X-UI
 DATE=$(date +%d-%m-%Y)
-# Отправляем Базу Данных
 DB="/etc/x-ui/x-ui.db"
 if [ -f "$DB" ]; then
-    NAME="резерв play2go $DATE.db"
+    NAME="Backup server $DATE.db"
     cp "$DB" "/tmp/$NAME"
-    curl -s -F document=@"/tmp/$NAME" -F "chat_id=$CHAT_ID" -F "caption=резервная копия серва play2go✅ " "https://api.telegram.org/bot$TOKEN/sendDocument"
+    curl -s -F document=@"/tmp/$NAME" -F "chat_id=$CHAT_ID" -F "caption=Server's backup has been upload✅" "https://api.telegram.org/bot$TOKEN/sendDocument"
     rm "/tmp/$NAME"
 else
     echo "DB not found at /etc/x-ui/x-ui.db"
 fi
-#Обновление и удаление всего и вся
+#APT update and remove log's "residual files" apt 
 rm -rf /var/log/journal
 apt autoremove --purge -y
 apt clean
 apt update && apt upgrade -y
 printf "\n\n0\n" | x-ui update
 if reboot; then
-echo "перезагрузка..."
+echo "reboot..."
 else
-echo "нет перезагрузки"
+echo "not reboot"
 f
